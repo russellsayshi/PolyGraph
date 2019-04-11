@@ -1,0 +1,67 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.io.*;
+
+public class Yeet extends JPanel {
+	private static double[] matrix_in = new double[30][5];
+	private static final double Y_MIN=-5,Y_MAX=5,X_MIN=-8,X_MAX=8;
+
+	private void drawLine(Graphics2D g, double x1, double y1, double x2, double y2) {
+		g.drawLine((x1-X_MIN)/(X_MAX-X_MIN)*getWidth(), (y1-X_MIN)/(X_MAX-X_MIN)*getHeight(), (x2-X_MIN)/(X_MAX-X_MIN)*getWidth(), (y2-X_MIN)/(X_MAX-X_MIN)*getHeight());
+	}
+
+	private double ytop(double y) {
+		return (y-X_MIN)/(X_MAX-X_MIN)*getHeight();
+	}
+
+	private double ptox(double p) {
+		return (X_MAX-X_MIN)/getWidth()*p+X_MIN;
+	}
+
+	private double ptoy(double p) {
+		return (Y_MAX-Y_MIN)/getHeight()*p+Y_MIN;
+	}
+
+	private double fofx(int f, double x) {
+		double val = 0;
+		for(int i = 0; i < matrix[f].length - 1; i++) {
+			val += Math.pow(x - matrix[f][0], i) * matrix[f][i+1];
+		}
+		return val;
+	}
+
+	@Override
+	public void paintComponent(Graphics gOld) {
+		Graphics2D g = (Graphics2D)gOld;
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, getWidth(), getHeight());
+		g.setColor(Color.BLACK);
+		drawLine(g, X_MIN, 0, X_MAX, 0);
+		drawLine(g, 0, Y_MIN, 0, Y_MAX);
+		g.setColor(Color.RED);
+		for(int x = 0; x < getWidth(); x++) {
+			for(int f = 0; f < matrix.length; f++) {
+				g.drawLine(x, ytop(fofx(f, ptox(x))), x+1, ytop(fofx(f, ptox(x+1))));
+			}
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		File file = new File("in.txt");
+		Scanner scan = new Scanner(file);
+		for(int n = 0; n < matrix.length; n++) {
+			String line = scan.nextLine();
+			String[] parts = line.split(" ");
+			for(int i = 0; i < matrix[i].length; i++) {
+				matrix[n][i] = Double.parseDouble(parts[i]);
+			}
+		}
+		JFrame frame = new JFrame("yeet");
+		frame.setSize(640, 480);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+		frame.setContentPane(new Yeet());
+		frame.setVisible(true);
+	}
+}
